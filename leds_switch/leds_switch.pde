@@ -21,6 +21,18 @@ int8_t read_USB_command(char * term, size_t msz) {
   
 }
 
+void print_Help() {
+  
+  USB.print(" -----------------------------------------\n");
+  USB.print("| Options:                               |\n");
+  USB.print("| help             Print this help       |\n");
+  USB.print("| red on           Activate red led      |\n");
+  USB.print("| red off          Deactive red led      |\n");
+  USB.print("| green on         Activate green led    |\n");
+  USB.print("| green off        Deactive green led    |\n");
+  USB.print(" -----------------------------------------\n");
+  
+}
 
 void setup() {
   
@@ -56,6 +68,8 @@ void loop() {
       if ( !strcmp(pch, "on"))  Utils.setLED( LED1, LED_ON);
       if ( !strcmp(pch, "off")) Utils.setLED( LED1, LED_OFF);
     }
+
+    if ( !strcmp(pch, "help")) print_Help();
 
     break;
   }
