@@ -18,43 +18,46 @@ int8_t read_USB_command(char * term, size_t msz) {
   }
   term[sz] = 0;
   return sz;
+  
 }
 
 
-void setup()
-{
+void setup() {
+  
   USB.ON();
   USB.println();
+  
 }
 
-void loop()
-{
-  // put your main code here, to run repeatedly:
+void loop() {
+  
   static size_t maxLenght = 20;
   int8_t messageLength;
   int number = 0;
   char message[maxLenght];
+  char * pch;
 
   messageLength = read_USB_command(message,maxLenght);
+
+  // convertimos el mensaje input a lowercase
+  strlwr(message);
+  pch = strtok (message," ");
   
-  switch (messageLength) {
-    case 6:
-      if ( !strcmp(message, "red on")) Utils.setLED( LED0, LED_ON); // Sets the red LED ON
-        
-      break;
-    case 7:
-      if ( !strcmp(message, "red off")) Utils.setLED( LED0, LED_OFF); // Sets the red LED ON
-      
-      break;
-    case 8:
-      if ( !strcmp(message, "green on")) Utils.setLED( LED1, LED_ON); // Sets the red LED ON
-      
-      break;
-    case 9:
-      if ( !strcmp(message, "green off")) Utils.setLED( LED1, LED_OFF); // Sets the red LED ON
-      
-      break;
+  while (pch != NULL) {
+   
+    if ( !strcmp(pch, "red")) {
+      pch = strtok (NULL, " ,.-");
+      if ( !strcmp(pch, "on"))  Utils.setLED( LED0, LED_ON);
+      if ( !strcmp(pch, "off")) Utils.setLED( LED0, LED_OFF);
+    }
+
+    if ( !strcmp(pch, "green")) {
+      pch = strtok (NULL, " ,.-");
+      if ( !strcmp(pch, "on"))  Utils.setLED( LED1, LED_ON);
+      if ( !strcmp(pch, "off")) Utils.setLED( LED1, LED_OFF);
+    }
+
+    break;
   }
-  
-  
+
 }

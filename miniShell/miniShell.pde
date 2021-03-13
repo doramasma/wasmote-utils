@@ -57,7 +57,9 @@ void loop()
           messageLength = read_USB_command(message,maxLenght);
           int period = atoi(message);
           USB.print(period);
-          
+
+
+          // mirar comando strtok y eliminar switch. Hacer documentacion help de comandos
           USB.print("\n Introduce blink times: ");
           messageLength = read_USB_command(message,maxLenght);
           int times = atoi(message);
