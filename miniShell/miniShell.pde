@@ -18,76 +18,80 @@ int8_t read_USB_command(char * term, size_t msz) {
   }
   term[sz] = 0;
   return sz;
+  
 }
 
+void print_Help() {
+  
+  USB.print(" -----------------------------------------------------------------------------------\n");
+  USB.print("| Options:                                                                         |\n");
+  USB.print("| help                                       Print this help                       |\n");
+  USB.print("| red on                                     Activate red led                      |\n");
+  USB.print("| red off                                    Deactive red led                      |\n");
+  USB.print("| red blink period=number times=number       blinks red led x times for x period   |\n");
+  
+  USB.print("| green on                                   Activate green led                    |\n");
+  USB.print("| green off                                  Deactive green led                    |\n");
+  USB.print("| green blink period=number times=number     blinks red led x times for x period   |\n");
+  USB.print(" -----------------------------------------------------------------------------------\n");
+  
+}
 
-void setup()
-{
+void setup() {
+  
   USB.ON();
   USB.println();
+  print_Help();
+  
 }
 
-void loop()
-{
-  // put your main code here, to run repeatedly:
+void loop() {
+  
   static size_t maxLenght = 20;
   int8_t messageLength;
   int number = 0;
   char message[maxLenght];
+  char * pch;
 
   messageLength = read_USB_command(message,maxLenght);
+
+  // convertimos el mensaje input a lowercase
+  strlwr(message);
+  pch = strtok (message," ");
   
-  switch (messageLength) {
-    case 6:
-      if ( !strcmp(message, "red on")) Utils.setLED( LED0, LED_ON); // Sets the red LED ON
-        
-      break;
-    case 7:
-      if ( !strcmp(message, "red off")) Utils.setLED( LED0, LED_OFF); // Sets the red LED ON
-      
-      break;
-    case 8:
-      if ( !strcmp(message, "green on")) Utils.setLED( LED1, LED_ON); // Sets the red LED ON
-     
-      break;
-    case 9:
-      if ( !strcmp(message, "green off")) Utils.setLED( LED1, LED_OFF); // Sets the red LED ON
-      if ( !strcmp(message, "blink red")) {
-          USB.print("\n Introduce a specific period: ");
-          messageLength = read_USB_command(message,maxLenght);
-          int period = atoi(message);
-          USB.print(period);
-
-
-          // mirar comando strtok y eliminar switch. Hacer documentacion help de comandos
-          USB.print("\n Introduce blink times: ");
-          messageLength = read_USB_command(message,maxLenght);
-          int times = atoi(message);
-          USB.print(times);
-          
-          Utils.blinkRedLED(period, times);       // blink once during 500 ms
+  while (pch != NULL) {
+   
+    if ( !strcmp(pch, "red")) {
+      pch = strtok (NULL, " ,.-");
+      if ( !strcmp(pch, "on"))  Utils.setLED( LED0, LED_ON);
+      if ( !strcmp(pch, "off")) Utils.setLED( LED0, LED_OFF);
+      if ( !strcmp(pch, "blink")) {
+        pch = strtok (NULL, " ,.-");
+        int period = atoi(pch);
+        pch = strtok (NULL, " ,.-");
+        int times = atoi(pch);
+        Utils.blinkRedLED(period, times);    
       }
-      
-      break;
-    case 11:
-      if ( !strcmp(message, "blink green")) {
-          USB.print("\n Introduce a specific period: ");
-          messageLength = read_USB_command(message,maxLenght);
-          int period = atoi(message);
-          USB.print(period);
-          
-          USB.print("\n Introduce blink times: ");
-          messageLength = read_USB_command(message,maxLenght);
-          int times = atoi(message);
-          USB.print(times);
-          
-          Utils.blinkGreenLED(period, times);       // blink once during 500 ms
-      }
-      break;
+       
+    }
 
-    
-      
+
+    if ( !strcmp(pch, "green")) {
+      pch = strtok (NULL, " ,.-");
+      if ( !strcmp(pch, "on"))  Utils.setLED( LED1, LED_ON);
+      if ( !strcmp(pch, "off")) Utils.setLED( LED1, LED_OFF);
+      if ( !strcmp(pch, "blink")) {
+        pch = strtok (NULL, " ,.-");
+        int period = atoi(pch);
+        pch = strtok (NULL, " ,.-");
+        int times = atoi(pch);
+        Utils.blinkGreenLED(period, times);    
+      }
+    }
+
+    if ( !strcmp(pch, "help")) print_Help();
+
+    break;
   }
-  
-  
+
 }
