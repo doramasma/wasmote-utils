@@ -39,11 +39,18 @@ void print_Help() {
   USB.print("| help                                       Print this help                       |\n");
   USB.print("| red on                                     Activate red led                      |\n");
   USB.print("| red off                                    Deactive red led                      |\n");
-  USB.print("| red blink period=number times=number       blinks red led x times for x period   |\n");
+  USB.print("| red blink period=number times=number       Blinks red led x times for x period   |\n");
   
   USB.print("| green on                                   Activate green led                    |\n");
   USB.print("| green off                                  Deactive green led                    |\n");
-  USB.print("| green blink period=number times=number     blinks red led x times for x period   |\n");
+  USB.print("| green blink period=number times=number     Blinks red led x times for x period   |\n");
+
+  USB.print("| set digital port=[1-8]                     Set digital pin, pin to high          |\n");
+  USB.print("| unset digital port=[1-8]                   Unset digital pin, pin to low         |\n");
+
+  USB.print("| get memory                                 Shows the memory available            |\n");
+  USB.print("| set time date=[yy:mm:dd:dow:hh:mm:ss]      Set the time to input date            |\n");
+  USB.print("| get time                                   Gets time and date                    |\n");
   USB.print(" -----------------------------------------------------------------------------------\n");
   
 }
@@ -51,6 +58,7 @@ void print_Help() {
 void setup() {
   
   USB.ON();
+  RTC.ON();
   USB.println();
   print_Help();
   
@@ -58,7 +66,7 @@ void setup() {
 
 void loop() {
   
-  static size_t maxLenght = 20;
+  static size_t maxLenght = 40;
   int8_t messageLength;
   int number = 0;
   char message[maxLenght];
@@ -69,9 +77,10 @@ void loop() {
   // convertimos el mensaje input a lowercase
   strlwr(message);
   pch = strtok (message," ");
+
   
   while (pch != NULL) {
-   
+  
     if ( !strcmp(pch, "red")) {
       pch = strtok (NULL, " ,.-");
       if ( !strcmp(pch, "on"))  Utils.setLED( LED0, LED_ON);
@@ -110,6 +119,13 @@ void loop() {
           digitalWrite(digitalPinsArray[portNumber - 1], HIGH);
         }
       }
+      if ( !strcmp(pch, "time")) {
+        pch = strtok (NULL, " ,.-");
+        USB.print(F("Setting time: "));
+        USB.print(pch);
+        USB.print("\n");
+        RTC.setTime(pch); 
+      }
     }
     if ( !strcmp(pch, "unset")) {
       pch = strtok (NULL, " ,.-");
@@ -125,6 +141,19 @@ void loop() {
       }
     }
 
+    if ( !strcmp(pch, "get")) { 
+      pch = strtok (NULL, " ,.-");
+      if ( !strcmp(pch, "time")) {
+        USB.print(F("Time [Day of week, YY/MM/DD, hh:mm:ss]: ")); 
+        USB.println(RTC.getTime());
+      }
+      if ( !strcmp(pch, "memory")) { 
+        USB.print("free Memory (Bytes):");
+        USB.println(freeMemory()); 
+      }
+    }
+    
+    
 
     if ( !strcmp(pch, "help")) print_Help();
 
