@@ -4,6 +4,17 @@
 
 */
 
+enum digitalPins{
+  Dig1 = DIGITAL1,
+  Dig2 = DIGITAL2,
+  Dig3 = DIGITAL3,
+  Dig4 = DIGITAL4,
+  Dig5 = DIGITAL5,
+  Dig6 = DIGITAL6,
+  Dig7 = DIGITAL7,
+  Dig8 = DIGITAL8
+} digitalPinsArray[] = {Dig1, Dig2, Dig3, Dig4, Dig5, Dig6, Dig7, Dig8};
+
 int8_t read_USB_command(char * term, size_t msz) {
   
   int8_t sz = 0;
@@ -72,10 +83,7 @@ void loop() {
         int times = atoi(pch);
         Utils.blinkRedLED(period, times);    
       }
-       
     }
-
-
     if ( !strcmp(pch, "green")) {
       pch = strtok (NULL, " ,.-");
       if ( !strcmp(pch, "on"))  Utils.setLED( LED1, LED_ON);
@@ -88,6 +96,35 @@ void loop() {
         Utils.blinkGreenLED(period, times);    
       }
     }
+
+
+    if ( !strcmp(pch, "set")) {
+      pch = strtok (NULL, " ,.-");
+      if ( !strcmp(pch, "digital")) {
+        pch = strtok (NULL, " ,.-");
+        int portNumber = atoi(pch);
+        if (portNumber < 1 || portNumber > 8) { 
+          USB.print("\nUndefined port: use a port between 1-8"); 
+        } else {
+          pinMode(digitalPinsArray[portNumber - 1], OUTPUT);
+          digitalWrite(digitalPinsArray[portNumber - 1], HIGH);
+        }
+      }
+    }
+    if ( !strcmp(pch, "unset")) {
+      pch = strtok (NULL, " ,.-");
+      if ( !strcmp(pch, "digital")) {
+        pch = strtok (NULL, " ,.-");
+        int portNumber = atoi(pch);
+        if (portNumber < 1 || portNumber > 8) { 
+          USB.print("\nUndefined port: use a port between 1-8");
+        } else {
+          pinMode(digitalPinsArray[portNumber - 1], INPUT);
+          digitalWrite(digitalPinsArray[portNumber - 1], LOW);
+        }
+      }
+    }
+
 
     if ( !strcmp(pch, "help")) print_Help();
 
