@@ -54,6 +54,7 @@ void print_Help() {
 
   USB.print("| set eeprom address=[1024-4096] val=number  Save the value in the given address   |\n");
   USB.print("| get eeprom address=[1024-4096]             Gets the value in the given address   |\n");
+  USB.print("| version                                    Prints wasmote version                |\n");
   USB.print(" -----------------------------------------------------------------------------------\n");
   
 }
@@ -176,8 +177,9 @@ void loop() {
         }
       }
     }
+
     
-    
+    if ( !strcmp(pch, "version")) Utils.showVersion();
     if ( !strcmp(pch, "help")) print_Help();
 
     break;
