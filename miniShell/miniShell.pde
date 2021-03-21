@@ -51,6 +51,9 @@ void print_Help() {
   USB.print("| get memory                                 Shows the memory available            |\n");
   USB.print("| set time date=[yy:mm:dd:dow:hh:mm:ss]      Set the time to input date            |\n");
   USB.print("| get time                                   Gets time and date                    |\n");
+
+  USB.print("| set eeprom address=[1024-4096] val=number  Save the value in the given address   |\n");
+  USB.print("| get eeprom address=[1024-4096]             Gets the value in the given address   |\n");
   USB.print(" -----------------------------------------------------------------------------------\n");
   
 }
@@ -126,6 +129,17 @@ void loop() {
         USB.print("\n");
         RTC.setTime(pch); 
       }
+      if ( !strcmp(pch, "eeprom")) {
+        pch = strtok (NULL, " ,.-");
+        int address = atoi(pch);
+        if (address < 1024 || address > 4096) {
+          USB.println("Address direction must be between 1024-4096");
+        } else {
+          pch = strtok (NULL, " ,.-");
+          int value = atoi(pch);
+          Utils.writeEEPROM(address,value);
+        }
+      }
     }
     if ( !strcmp(pch, "unset")) {
       pch = strtok (NULL, " ,.-");
@@ -151,10 +165,19 @@ void loop() {
         USB.print("free Memory (Bytes):");
         USB.println(freeMemory()); 
       }
+      if ( !strcmp(pch, "eeprom")) { 
+        pch = strtok (NULL, " ,.-");
+        int address = atoi(pch);
+        if (address < 1024 || address > 4096) {
+          USB.println("Address direction must be between 1024-4096");
+        } else {
+          uint8_t value=Utils.readEEPROM(address);
+          USB.println(value, DEC);
+        }
+      }
     }
     
     
-
     if ( !strcmp(pch, "help")) print_Help();
 
     break;
